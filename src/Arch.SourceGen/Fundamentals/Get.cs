@@ -296,4 +296,31 @@ public static class GetExtensions
 
         return sb.AppendLine(template);
     }
+
+    #region Entity ID
+    public static StringBuilder AppendWorldIdGets(this StringBuilder sb, int amount)
+    {
+        for (var index = 1; index < amount; index++)
+        {
+            sb.AppendWorldIdGet(index);
+        }
+
+        return sb;
+    }
+
+    public static StringBuilder AppendWorldIdGet(this StringBuilder sb, int amount)
+    {
+        var generics = new StringBuilder().GenericWithoutBrackets(amount);
+
+        var template =
+            $$"""
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            [Pure]
+            public Components<{{generics}}> Get<{{generics}}>(int id)
+                => Get<{{generics}}>(Get(id));
+            """;
+
+        return sb.AppendLine(template);
+    }
+    #endregion
 }

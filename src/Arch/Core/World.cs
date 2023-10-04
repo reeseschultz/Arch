@@ -550,7 +550,7 @@ public partial class World
     /// </summary>
     /// <param name="hash">Its hash..</param>
     /// <param name="archetype">The found <see cref="Archetype"/>.</param>
-    /// <returns>True if found, otherwhise false.</returns>
+    /// <returns>True if found, otherwise false.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     [Pure]
     internal bool TryGetArchetype(int hash, [MaybeNullWhen(false)] out Archetype archetype)
@@ -563,7 +563,7 @@ public partial class World
     /// </summary>
     /// <param name="bitset">A <see cref="BitSet"/> indicating the <see cref="Archetype"/> structure.</param>
     /// <param name="archetype">The found <see cref="Archetype"/>.</param>
-    /// <returns>True if found, otherwhise false.</returns>
+    /// <returns>True if found, otherwise false.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     [Pure]
     public bool TryGetArchetype(BitSet bitset, [MaybeNullWhen(false)] out Archetype archetype)
@@ -576,7 +576,7 @@ public partial class World
     /// </summary>
     /// <param name="bitset">A <see cref="SpanBitSet"/> indicating the <see cref="Archetype"/> structure.</param>
     /// <param name="archetype">The found <see cref="Archetype"/>.</param>
-    /// <returns>True if found, otherwhise false.</returns>
+    /// <returns>True if found, otherwise false.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     [Pure]
     public bool TryGetArchetype(SpanBitSet bitset, [MaybeNullWhen(false)] out Archetype archetype)
@@ -589,7 +589,7 @@ public partial class World
     /// </summary>
     /// <param name="types">Its <see cref="ComponentType"/>'s.</param>
     /// <param name="archetype">The found <see cref="Archetype"/>.</param>
-    /// <returns>True if found, otherwhise false.</returns>
+    /// <returns>True if found, otherwise false.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     [Pure]
     public bool TryGetArchetype(Span<ComponentType> types, [MaybeNullWhen(false)] out Archetype archetype)
@@ -873,7 +873,7 @@ public partial class World
     /// </summary>
     /// <typeparam name="T">The component type.</typeparam>
     /// <param name="entity">The <see cref="Entity"/>.</param>
-    /// <returns>True if it has the desired component, otherwhise false.</returns>
+    /// <returns>True if it has the desired component, otherwise false.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     [Pure]
     public bool Has<T>(Entity entity)
@@ -904,7 +904,7 @@ public partial class World
     /// <typeparam name="T">The component type.</typeparam>
     /// <param name="entity">The <see cref="Entity"/>.</param>
     /// <param name="component">The found component.</param>
-    /// <returns>True if it exists, otherwhise false.</returns>
+    /// <returns>True if it exists, otherwise false.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     [Pure]
     public bool TryGet<T>(Entity entity, out T component)
@@ -1080,7 +1080,7 @@ public partial class World
     /// </summary>
     /// <param name="entity">The <see cref="Entity"/>.</param>
     /// <param name="type">The component <see cref="ComponentType"/>.</param>
-    /// <returns>True if it has the desired component, otherwhise false.</returns>
+    /// <returns>True if it has the desired component, otherwise false.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     [Pure]
     public bool Has(Entity entity, ComponentType type)
@@ -1090,11 +1090,11 @@ public partial class World
     }
 
     /// <summary>
-    ///     Checks if an <see cref="Entity"/> has a certain component.
+    ///     Checks if an <see cref="Entity"/> has all of the components.
     /// </summary>
     /// <param name="entity">The <see cref="Entity"/>.</param>
-    /// <param name="types">The component <see cref="ComponentType"/>.</param>
-    /// <returns>True if it has the desired component, otherwhise false.</returns>
+    /// <param name="types">The components <see cref="ComponentType"/>.</param>
+    /// <returns>True if it has all of the components, otherwise false.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     [Pure]
     public bool HasRange(Entity entity, Span<ComponentType> types)
@@ -1171,7 +1171,7 @@ public partial class World
     /// <param name="entity">The <see cref="Entity"/>.</param>
     /// <param name="type">The component <see cref="ComponentType"/>.</param>
     /// <param name="component">The found component.</param>
-    /// <returns>True if it exists, otherwhise false.</returns>
+    /// <returns>True if it exists, otherwise false.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     [Pure]
     public bool TryGet(Entity entity, ComponentType type, out object component)
@@ -1282,7 +1282,7 @@ public partial class World
     ///     Removes a list of <see cref="ComponentType"/>'s from the <see cref="Entity"/> and moves it to a different <see cref="Archetype"/>.
     /// </summary>
     /// <param name="entity">The <see cref="Entity"/>.</param>
-    /// <param name="types">A <see cref="Span{T}"/> of <see cref="ComponentType"/>'s, those are removed from the <see cref="Entity"/>.</param>
+    /// <param name="types">A <see cref="Span{T}"/> of <see cref="ComponentType"/>s to remove from the <see cref="Entity"/>.</param>
     [SkipLocalsInit]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void RemoveRange(Entity entity, Span<ComponentType> types)
@@ -1316,6 +1316,234 @@ public partial class World
     }
 }
 
+#region Entity Management by ID
+public partial class World
+{
+    /// <summary>
+    ///     Checks if the <see cref="Entity"/> is alive in this <see cref="World"/> by ID.
+    /// </summary>
+    /// <param name="id">The entity ID.</param>
+    /// <returns>True if it exists and is alive, otherwise false.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [Pure]
+    public bool Has(int id)
+        => EntityInfo.Has(id);
+
+    /// <summary>
+    ///    Checks if the <see cref="Entity"/> is alive in this <see cref="World"/> by ID.
+    /// </summary>
+    /// <param name="id">The entity ID.</param>
+    /// <returns>True if it exists and is alive, otherwise false.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [Pure]
+    public bool IsAlive(int id)
+        => Has(id);
+
+    /// <summary>
+    ///     Gets the entity by ID.
+    /// </summary>
+    /// <param name="id">The ID.</param>
+    /// <returns>The entity.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [Pure]
+    public ref Entity Get(int id)
+    {
+        var entitySlot = EntityInfo.GetEntitySlot(id);
+        return ref entitySlot.Archetype.Entity(ref entitySlot.Slot);
+    }
+
+    /// <summary>
+    ///     Tries to return a reference to the <see cref="Entity"/>.
+    /// </summary>
+    /// <param name="id">The entity ID.</param>
+    /// <param name="entity">The entity.</param>
+    /// <returns>True if it exists, otherwise false.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [Pure]
+    public bool TryGet(int id, out Entity entity)
+    {
+        entity = Entity.Null;
+
+        if (!Has(id)) return false;
+
+        entity = Get(id);
+        return true;
+    }
+
+    /// <summary>
+    ///     Sets or replaces a component for an <see cref="Entity"/> by ID.
+    /// </summary>
+    /// <param name="id">The entity ID.</param>
+    /// <param name="cmp">The component.</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Set(int id, in object cmp)
+        => Set(Get(id), in cmp);
+
+    /// <summary>
+    ///    Destroys an <see cref="Entity"/> by ID.
+    /// </summary>
+    /// <param name="id">The entity ID.</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Destroy(int id)
+        => Destroy(Get(id));
+}
+#endregion
+
+#region Component Management by Entity ID (Generic)
+public partial class World
+{
+    /// <summary>
+    ///     Checks if an <see cref="Entity"/> has a certain component by ID.
+    /// </summary>
+    /// <typeparam name="T">The component type.</typeparam>
+    /// <param name="id">The entity ID.</param>
+    /// <returns>True if it has the desired component, otherwise false.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [Pure]
+    public bool Has<T>(int id)
+        => Has<T>(Get(id));
+
+    /// <summary>
+    ///     Returns a reference to the component of an <see cref="Entity"/> by ID.
+    /// </summary>
+    /// <typeparam name="T">The component type.</typeparam>
+    /// <param name="id">The entity ID.</param>
+    /// <returns>A reference to the component.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [Pure]
+    public ref T Get<T>(int id)
+        => ref Get<T>(Get(id));
+
+    /// <summary>
+    ///     Sets or replaces a component for an <see cref="Entity"/> by ID.
+    /// </summary>
+    /// <typeparam name="T">The component type.</typeparam>
+    /// <param name="id">The entity ID.</param>
+    /// <param name="cmp">The component.</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Set<T>(int id, in T cmp = default)
+        => Set(Get(id), in cmp);
+
+    /// <summary>
+    ///    Tries to return a reference to the component of an <see cref="Entity"/> by ID.
+    ///    Will copy the component if its a struct.
+    /// </summary>
+    /// <typeparam name="T">The component type.</typeparam>
+    /// <param name="id">The entity ID.</param>
+    /// <param name="component">The found component.</param>
+    /// <returns>True if it exists, otherwise false.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [Pure]
+    public bool TryGet<T>(int id, out T component)
+        => TryGet(Get(id), out component);
+
+    /// <summary>
+    ///     Tries to return a reference to the component of an <see cref="Entity"/> by ID.
+    /// </summary>
+    /// <typeparam name="T">The component type.</typeparam>
+    /// <param name="id">The entity ID.</param>
+    /// <param name="exists">True if it exists, otherwise false.</param>
+    /// <returns>A reference to the component.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [Pure]
+    public ref T TryGetRef<T>(int id, out bool exists)
+        => ref TryGetRef<T>(Get(id), out exists);
+
+    /// <summary>
+    ///     Adds or gets a component for an <see cref="Entity"/> by ID.
+    /// </summary>
+    /// <typeparam name="T">The component type.</typeparam>
+    /// <param name="id">The entity ID.</param>
+    /// <param name="cmp">The component value used if its being added.</param>
+    /// <returns>A reference to the component.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public ref T AddOrGet<T>(int id, T cmp = default)
+        => ref AddOrGet(Get(id), cmp);
+
+    /// <summary>
+    ///     Adds an new component to the <see cref="Entity"/> and moves it to the new <see cref="Archetype"/> by ID.
+    /// </summary>
+    /// <typeparam name="T">The component type.</typeparam>
+    /// <param name="id">The entity ID.</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Add<T>(int id)
+        => Add<T>(Get(id));
+
+    /// <summary>
+    ///     Adds an new component to the <see cref="Entity"/> and moves it to the new <see cref="Archetype"/> by ID.
+    /// </summary>
+    /// <typeparam name="T">The component type.</typeparam>
+    /// <param name="id">The entity ID.</param>
+    /// <param name="cmp">The component instance.</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Add<T>(int id, in T cmp)
+        => Add(Get(id), in cmp);
+
+    /// <summary>
+    ///     Removes the <see cref="ComponentType"/> from the <see cref="Entity"/> and moves it to a different <see cref="Archetype"/> by ID.
+    /// </summary>
+    /// <param name="id">The entity ID.</param>
+    /// <param name="type">The <see cref="ComponentType"/> to remove from the the <see cref="Entity"/>.</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Remove<T>(int id)
+        => Remove<T>(Get(id));
+}
+#endregion
+
+#region Component Management by Entity ID (Non-Generic)
+public partial class World
+{
+    /// <summary>
+    ///     Checks if an <see cref="Entity"/> has all of the components by ID.
+    /// </summary>
+    /// <param name="entity">The <see cref="Entity"/>.</param>
+    /// <param name="types">The components <see cref="ComponentType"/>.</param>
+    /// <returns>True if it has all of the components, otherwise false.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [Pure]
+    public bool HasRange(int id, Span<ComponentType> types)
+        => HasRange(Get(id), types);
+
+    /// <summary>
+    ///     Returns an array of components of an <see cref="Entity"/> by ID.
+    /// </summary>
+    /// <param name="id">The entity ID.</param>
+    /// <param name="types">The component <see cref="ComponentType"/> as a <see cref="Span{T}"/>.</param>
+    /// <returns>A reference to the component.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [Pure]
+    public object[] GetRange(int id, Span<ComponentType> types)
+        => GetRange(Get(id), types);
+
+    /// <summary>
+    ///     Sets or replaces a <see cref="Span{T}"/> of components for an <see cref="Entity"/> by ID.
+    /// </summary>
+    /// <param name="id">The entity ID.</param>
+    /// <param name="components">The components <see cref="Span{T}"/>.</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void SetRange(int id, Span<object> components)
+        => SetRange(Get(id), components);
+
+    /// <summary>
+    ///     Adds an new component to the <see cref="Entity"/> and moves it to the new <see cref="Archetype"/> by ID.
+    /// </summary>
+    /// <param name="id">The entity ID.</param>
+    /// <param name="components">The components <see cref="Span{T}"/>.</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void AddRange(int id, Span<object> components)
+        => AddRange(Get(id), components);
+
+    /// <summary>
+    ///     Removes the <see cref="ComponentType"/>s from the <see cref="Entity"/> and moves it to a different <see cref="Archetype"/> by ID.
+    /// </summary>
+    /// <param name="id">The entity ID.</param>
+    /// <param name="types">A <see cref="Span{T}"/> of <see cref="ComponentType"/>s to remove from the <see cref="Entity"/>.</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void RemoveRange(int id, Span<ComponentType> types)
+        => RemoveRange(Get(id), types);
+}
+#endregion
+
 // Utility methods
 
 public partial class World
@@ -1324,7 +1552,7 @@ public partial class World
     ///     Checks if the <see cref="Entity"/> is alive in this <see cref="World"/>.
     /// </summary>
     /// <param name="entity">The <see cref="Entity"/>.</param>
-    /// <returns>True if it exists and is alive, otherwhise false.</returns>
+    /// <returns>True if it exists and is alive, otherwise false.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     [Pure]
     public bool IsAlive(Entity entity)

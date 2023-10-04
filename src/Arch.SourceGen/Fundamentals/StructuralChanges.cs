@@ -1,3 +1,5 @@
+using System.Text;
+
 namespace Arch.SourceGen;
 
 public static class StructuralChangesExtensions
@@ -160,4 +162,56 @@ public static class StructuralChangesExtensions
 
         return sb.AppendLine(template);
     }
+
+    #region Entity ID
+    public static StringBuilder AppendWorldIdAdds(this StringBuilder sb, int amount)
+    {
+        for (var index = 1; index < amount; index++)
+        {
+            sb.AppendWorldIdAdd(index);
+        }
+
+        return sb;
+    }
+
+    public static StringBuilder AppendWorldIdAdd(this StringBuilder sb, int amount)
+    {
+        var generics = new StringBuilder().GenericWithoutBrackets(amount);
+        var parameters = new StringBuilder().GenericInDefaultParams(amount);
+        var inParameters = new StringBuilder().InsertGenericInParams(amount);
+
+        var template =
+            $$"""
+              [MethodImpl(MethodImplOptions.AggressiveInlining)]
+              public void Add<{{generics}}>(int id, {{parameters}})
+                => Add<{{generics}}>(Get(id), {{inParameters}});
+              """;
+
+        return sb.AppendLine(template);
+    }
+
+    public static StringBuilder AppendWorldIdRemoves(this StringBuilder sb, int amount)
+    {
+        for (var index = 1; index < amount; index++)
+        {
+            sb.AppendWorldIdRemove(index);
+        }
+
+        return sb;
+    }
+
+    public static StringBuilder AppendWorldIdRemove(this StringBuilder sb, int amount)
+    {
+        var generics = new StringBuilder().GenericWithoutBrackets(amount);
+
+        var template =
+            $$"""
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public void Remove<{{generics}}>(int id)
+                => Remove<{{generics}}>(Get(id));
+            """;
+
+        return sb.AppendLine(template);
+    }
+    #endregion
 }

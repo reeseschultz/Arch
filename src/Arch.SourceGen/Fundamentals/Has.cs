@@ -147,4 +147,31 @@ public static class HasExtensions
 
         return sb.AppendLine(template);
     }
+
+    #region Entity ID
+    public static StringBuilder AppendWorldIdHases(this StringBuilder sb, int amount)
+    {
+        for (var index = 1; index < amount; index++)
+        {
+            sb.AppendWorldIdHas(index);
+        }
+
+        return sb;
+    }
+
+    public static StringBuilder AppendWorldIdHas(this StringBuilder sb, int amount)
+    {
+        var generics = new StringBuilder().GenericWithoutBrackets(amount);
+
+        var template =
+            $$"""
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            [Pure]
+            public bool Has<{{generics}}>(int id)
+                => Has<{{generics}}>(Get(id));
+            """;
+
+        return sb.AppendLine(template);
+    }
+    #endregion
 }

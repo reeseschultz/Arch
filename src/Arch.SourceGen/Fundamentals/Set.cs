@@ -184,4 +184,32 @@ public static class SetExtensions
 
         return sb.AppendLine(template);
     }
+
+    #region Entity ID
+    public static StringBuilder AppendWorldIdSets(this StringBuilder sb, int amount)
+    {
+        for (var index = 1; index < amount; index++)
+        {
+            sb.AppendWorldIdSet(index);
+        }
+
+        return sb;
+    }
+
+    public static StringBuilder AppendWorldIdSet(this StringBuilder sb, int amount)
+    {
+        var generics = new StringBuilder().GenericWithoutBrackets(amount);
+        var parameters = new StringBuilder().GenericInParams(amount);
+        var insertParams = new StringBuilder().InsertGenericInParams(amount);
+
+        var template =
+            $$"""
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public void Set<{{generics}}>(int id, {{parameters}})
+                => Set<{{generics}}>(Get(id), {{insertParams}});
+            """;
+
+        return sb.AppendLine(template);
+    }
+    #endregion
 }

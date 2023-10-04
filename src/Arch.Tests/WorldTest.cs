@@ -158,7 +158,7 @@ public partial class WorldTest
 #endif
 
         // Entity reference null is NOT alive.
-        EntityReference cons = new EntityReference{};
+        EntityReference cons = new EntityReference { };
         EntityReference refs = EntityReference.Null;
 
 #if PURE_ECS
@@ -377,7 +377,7 @@ public partial class WorldTest
     {
 
         var queryDesc = new QueryDescription().WithAll<Transform>();
-        _world.Set(in queryDesc, new Transform{ X = 100, Y = 100});
+        _world.Set(in queryDesc, new Transform { X = 100, Y = 100 });
         _world.Query(in queryDesc, (ref Transform transform) =>
         {
             That(transform.X, Is.EqualTo(100));
@@ -442,7 +442,7 @@ public partial class WorldTest
         for (int index = 0; index < 1000; index++)
         {
             var entity = world.Create(_entityGroup);
-            world.Add(entity,10);
+            world.Add(entity, 10);
         }
 
         // Add int to all entities without int
@@ -452,8 +452,10 @@ public partial class WorldTest
         var counter = 0;
         world.Query(in withIntQueryDesc, (ref int i) =>
         {
-            if (i == 10) previousCounter++;
-            if (i == 100) counter++;
+            if (i == 10)
+                previousCounter++;
+            if (i == 100)
+                counter++;
         });
 
         That(world.CountEntities(in withIntQueryDesc), Is.EqualTo(2000));
@@ -591,6 +593,87 @@ public partial class WorldTest
         That(arch, Is.EqualTo(_world.GetArchetype(entity)));
     }
 }
+
+#region Entity ID
+public partial class WorldTest
+{
+    [Test]
+    public void EntityManagementById()
+    {
+        That(_world.TryGet(-1, out var e), Is.EqualTo(false));
+        That(e, Is.EqualTo(Entity.Null));
+
+        var entity = _world.Create(_entityGroup);
+
+        That(_world.Has(entity.Id), Is.EqualTo(true));
+        That(_world.IsAlive(entity.Id), Is.EqualTo(true));
+
+        _world.Set(entity.Id, new Transform { X = 50, Y = 60 });
+ 
+        var references = _world.Get<Transform>(entity.Id);
+        That(references.X, Is.EqualTo(50));
+        That(references.Y, Is.EqualTo(60));
+
+        That(_world.Get(entity.Id), Is.EqualTo(entity));
+        That(_world.TryGet(entity.Id, out e), Is.EqualTo(true));
+        That(e, Is.EqualTo(entity));
+
+        _world.Destroy(entity);
+
+        False(_world.IsAlive(entity));
+    }
+
+    [Test]
+    public void GenericComponentManagementByEntityId()
+    {
+        var entity = _world.Create(_entityGroup);
+        True(_world.Has<Transform, Rotation>(entity.Id));
+
+        _world.Set(entity.Id, new Transform { X = 10, Y = 20 }, new Rotation { X = 30, Y = 40 });
+
+        ref var transform = ref _world.TryGetRef<Transform>(entity.Id, out var success);
+        That(success, Is.EqualTo(true));
+
+        var references = _world.Get<Transform, Rotation>(entity.Id);
+        That(references.t0.X, Is.EqualTo(10));
+        That(references.t0.Y, Is.EqualTo(20));
+        That(references.t1.X, Is.EqualTo(30));
+        That(references.t1.Y, Is.EqualTo(40));
+
+        _world.AddOrGet(entity.Id, new Ai());
+
+        That(_world.Has<Transform, Rotation, Ai>(entity.Id), Is.EqualTo(true));
+
+        _world.Remove<Transform, Rotation>(entity.Id);
+
+        That(_world.Has<Ai>(entity.Id), Is.EqualTo(true));
+
+        _world.Remove<Ai>(entity.Id);
+
+        That(_world.Has<Ai>(entity.Id), Is.EqualTo(false));
+
+        _world.Add(entity.Id, new Transform { X = 10, Y = 20 }, new Rotation { X = 30, Y = 40 });
+
+        That(_world.Has<Transform, Rotation>(entity.Id), Is.EqualTo(true));
+
+        references = _world.Get<Transform, Rotation>(entity.Id);
+        That(references.t0.X, Is.EqualTo(10));
+        That(references.t0.Y, Is.EqualTo(20));
+        That(references.t1.X, Is.EqualTo(30));
+        That(references.t1.Y, Is.EqualTo(40));
+
+        _world.Remove<Transform, Rotation>(entity.Id);
+
+        That(_world.Has<Transform, Rotation>(entity.Id), Is.EqualTo(false));
+
+        _world.Add<Transform, Rotation, Ai>(entity.Id);
+
+        That(_world.Has<Transform, Rotation, Ai>(entity.Id), Is.EqualTo(true));
+    }
+
+    // TODO: Add tests for non-generic components
+}
+#endregion
 
 /// <summary>
 /// Testing generated methods
